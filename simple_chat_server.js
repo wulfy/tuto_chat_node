@@ -7,7 +7,7 @@ const TYPE_MESSAGE = "message";
 const TYPE_USER_LIST = "TYPE_USER_LIST";
 const TYPE_ERROR = "TYPE_ERROR";
 const TYPE_IDENTIFY = "identify";
-
+const SERVER = "server";
 function getNow() {
 	var m = new Date();
 	var dateString = m.getUTCFullYear() +"/"+ (m.getUTCMonth()+1) +"/"+ m.getUTCDate() + " " + m.getUTCHours() + ":" + m.getUTCMinutes() + ":" + m.getUTCSeconds();
@@ -19,7 +19,8 @@ var userList = [];
 io.on('connection', function(socket){
   console.log('a user is connected');
   const message = 'server > hi';
-  socket.emit(TYPE_MESSAGE,{message});
+  const userName = SERVER;
+  socket.emit(TYPE_MESSAGE,{message,userName});
   socket.userName = null;
 
   socket.on(TYPE_IDENTIFY,function(data){
@@ -33,12 +34,14 @@ io.on('connection', function(socket){
   	if(socket.userName === null)
   	{
   		const message = 'You must be identified to send a massage please provide a userName';
-  		socket.emit(TYPE_ERROR,{message});
+      const userName = SERVER;
+  		socket.emit(TYPE_ERROR,{message,userName});
   		return;
   	}
 
-  	const message = socket.userName + ' > ' + data.message;
-  	io.emit(TYPE_MESSAGE,{message});
+  	const message = data.message;
+    const userName = socket.userName;
+  	io.emit(TYPE_MESSAGE,{message,userName});
 
   });
 
